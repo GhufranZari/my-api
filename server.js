@@ -1,42 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Form</title>
+  <link rel="stylesheet" href="Styles/style.css">
+</head>
+<body>
 
+  <form id="infoForm">
+    <label>First name:</label>
+    <input type="text" id="fname" required>
 
-const app = express();
-app.use(express.json());
+    <label>Last name:</label>
+    <input type="text" id="lname" required>
 
-let users = [
-  { id: 1, name: 'Alice', email: 'alice@example.com' },
-  { id: 2, name: 'Bob',   email: 'bob@example.com' },
-  { id: 3, name: 'nancy', email: 'nancy@example.com' }  
-];
+    <label>Date:</label>
+    <input type="date" id="dob" required>
 
-app.get('/users', (req, res) => {
-  res.json(users);
-});
+    <label>Email:</label>
+    <input type="email" id="email" required>
 
-app.get('/users/:id', (req, res) => {
-  const user = users.find(u => u.id === Number(req.params.id));
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json(user);
-});
+    <label>Password:</label>
+    <input type="password" id="password" required>
 
-app.post('/users', (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
-  const newUser = { id: Date.now(), name, email };
-  users.push(newUser);
-  res.status(201).json(newUser);
-});
+    <label>On / Off</label>
+    <input type="checkbox" id="status">
 
-app.put('/users/:id', (req, res) => {
-  const index = users.findIndex(u => u.id === Number(req.params.id));
-  if (index === -1) return res.status(404).json({ error: 'User not found' });
-  users[index] = { ...users[index], ...req.body };
-  res.json(users[index]);
-});
+    <input type="submit" value="Submit">
+  </form>
 
-app.delete('/users/:id', (req, res) => {
-  users = users.filter(u => u.id !== Number(req.params.id));
-  res.json({ message: 'User deleted' });
-});
+  <hr>
 
-app.listen(3030, () => console.log('API running on http://localhost:3030')); 
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="table1"></tbody>
+  </table>
+
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Your Script -->
+  <script src="Script/script.js"></script>
+
+</body>
+</html>
+
