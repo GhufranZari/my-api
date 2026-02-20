@@ -1,53 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>User Form</title>
-  <link rel="stylesheet" href="Styles/style.css">
-</head>
-<body>
+import express from 'express';
+import cors from 'cors';
 
-  <form id="infoForm">
-    <label>First name:</label>
-    <input type="text" id="fname" required>
+const app = express();
 
-    <label>Last name:</label>
-    <input type="text" id="lname" required>
+app.use(cors());
+app.use(express.json());
 
-    <label>Date:</label>
-    <input type="date" id="dob" required>
+let users = [
+  { id: 1, name: 'Alice', email: 'alice@example.com' },
+  { id: 2, name: 'Bob', email: 'bob@example.com' },
+  { id: 3, name: 'nancy', email: 'nancy@example.com' }
+];
 
-    <label>Email:</label>
-    <input type="email" id="email" required>
+function getNextId() {
+  if (users.length === 0) return 1;
+  const maxId = Math.max(...users.map(u => u.id));
+  return maxId + 1;
+}
 
-    <label>Password:</label>
-    <input type="password" id="password" required>
+// ✅ Reorder IDs sequentially
+function reorderIds() {
+  users = users.map((user, index) => ({
+    ...user,
+    id: index + 1
+  }));
+}
 
-    <label>On / Off</label>
-    <input type="checkbox" id="status">
+app.get('/users', (req, res) => {
+  res.json(users);
+});
 
-    <input type="submit" value="Submit">
-  </form>
+app.get('/users/:id', (req, res) => {
+  const user = users.find(u => u.id === Number(req.params.id));
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
+});
 
-  <hr>
+app.post('/users', (req, res) => {
+  const { name, email } = req.body;
+  if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
+  
+  const newUser = { id: getNextId(), name, email };
+  users.push(newUser);
+  res.status(201).json(newUser);
+});
 
-  <table border="1">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody id="table1"></tbody>
-  </table>
+app.put('/users/:id', (req, res) => {
+  const index = users.findIndex(u => u.id === Number(req.params.id));
+  if (index === -1) return res.status(404).json({ error: 'User not found' });
+  users[index] = { ...users[index], ...req.body };
+  res.json(users[index]);
+});
 
-  <!-- jQuery CDN -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+app.delete('/users/:id', (req, res) => {
+  users = users.filter(u => u.id !== Number(req.params.id));
+  reorderIds(); // ✅ Reorder IDs after delete
+  res.json({ message: 'User deleted' });
+});
 
-  <!-- Your Script -->
-  <script src="Script/script.js"></script>
-
-</body>
-</html>
-
+app.listen(3030, () => console.log('API running on http://localhost:3030'));
